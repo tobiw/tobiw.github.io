@@ -30,7 +30,7 @@ My own protocol, structure and convention on top of MQTT (as transport layer) fo
   <li>Node attributes MUST BE:
     <ul>
       <li>$name: friendly name</li>
-      <li>$settable: writeable property or readonly<li>
+      <li>$settable: writeable property or readonly</li>
       <li>$unit: unit string, e.g. "°C", "W", "%", "#" (count), "" (empty)
       <li>$datatype: string describing the datatype: "integer", "float", "boolean", "string"</li>
       <li>$properties: comma-separated list of exposed sensor values or actuators</li>
@@ -53,7 +53,7 @@ My own protocol, structure and convention on top of MQTT (as transport layer) fo
           <li>sensors
             <ul>
               <li>$name = "Living Room Sensors"</li>
-              <li>$type = "sensors"
+              <li>$type = "sensors"</li>
               <li>$properties = "temperature,humidity":
                 <ol>
                   <li>temperature: $name = "Living Room Temperature", $settable = "false", $unit = "°C", $datatype = "float"</li>
@@ -64,21 +64,23 @@ My own protocol, structure and convention on top of MQTT (as transport layer) fo
           <li>heatpump
             <ul>
               <li>$name = "Living Room Heatpump Control"</li>
-              <li>$type = "ir"
+              <li>$type = "ir"</li>
               <li>$properties = "heating":
                 <ol>
-                  <li>heating: $name = "Heatpump Heating Enabled", $settable = "true", $datatype = "boolean"<li>
+                  <li>heating: $name = "Heatpump Heating Enabled", $settable = "true", $datatype = "boolean"</li>
                 </ol>
+              </li>
             </ul>
           </li>
           <li>corner-light
             <ul>
               <li>$name = "Living Room Corner Light"</li>
-              <li>$type = "light"
+              <li>$type = "light"</li>
               <li>$properties = "powered":
                 <ol>
-                  <li>heating: $name = "Living Room Corner Light Powered", $settable = "true", $datatype = "boolean"<li>
+                  <li>heating: $name = "Living Room Corner Light Powered", $settable = "true", $datatype = "boolean"</li>
                 </ol>
+              </li>
             </ul>
           </li>
         </ol>
