@@ -4,18 +4,85 @@
 My own protocol, structure and convention on top of MQTT (as transport layer) follows closed <a href="https://github.com/homieiot/convention">HomieIoT</a>. This is done for two reasons: a) it's already developed, tested, and well-thought out, and b) actual homie nodes can be easily integrated.
 
 <ul>
-  <li>A device is a physical piece of hardware and can contain one or multiple nodes (sensors or actors). A node can have multiple properties.</li>
+  <li>A device is a physical piece of hardware and can contain one or multiple nodes (sensors or actuators). A node can have multiple properties.</li>
   <li>The base topic is "home/".</li>
-  <li>The topic for a device is "&lt;BASE_TOPIC&gt;/DEV_ID" with DEV_ID usually being the room or room-function.</li>
-  <li>Attributes that MUST BE set even if homie isn't used are:</li>
+  <li>The topic for a device is "&lt;BASE_TOPIC&gt;/&lt;DEV_ID&gt;/" with DEV_ID usually being the room or room-function.</li>
+  <li>Device attributes that MUST BE set even if the homie firmware isn't used are:
     <ul>
       <li>$name: friendly name</li>
-      <li>$state: at least "init", "ready"</li>
+      <li>$state: at least "init", "ready", "alert"</li>
       <li>$localip: IPv4 address of the device</li>
       <li>$mac: MAC address of the device</li>
       <li>$fw/name and $fw/version</li>
       <li>$nodes: comma-separated list of nodes</li>
-      <li>$stats/uptime, and $stats/signal if ESP8266</li>
+      <li>$stats/uptime in seconds, $stats/interval in seconds, $stats/signal if ESP8266</li>
     </ul>
-  <li></li>
+  </li>
+  <li>The topic for a node is "&lt;BASE_TOPIC&gt;/&lt;DEV_ID&gt;/&lt;NODE_ID&gt;/" with NODE_ID describing a subsystem of the node, e.g. "sensors".</li>
+  <li>Node attributes MUST BE:
+    <ul>
+      <li>$name: friendly name</li>
+      <li>$type: string describing the type</li>
+      <li>$properties: comma-separated list of exposed sensor values or actuators</li>
+    </ul>
+  </li>
+  <li>The topic for a property is "&lt;BASE_TOPIC&gt;/&lt;DEV_ID&gt;/&lt;NODE_ID&gt;/&lt;PROPERTY_ID&gt;/" with PROPERTY_ID usually being the type of sensor, e.g. "temperature". The property value can be read from the property topic.</li>
+  <li>Node attributes MUST BE:
+    <ul>
+      <li>$name: friendly name</li>
+      <li>$settable: writeable property or readonly<li>
+      <li>$unit: unit string, e.g. "°C", "W", "%", "#" (count), "" (empty)
+      <li>$datatype: string describing the datatype: "integer", "float", "boolean", "string"</li>
+      <li>$properties: comma-separated list of exposed sensor values or actuators</li>
+      <li>set: if settable, write value based on datatype to set the property</li>
+    </ul>
+  </li>
+</ul>
+
+<h4>Examples</h4>
+<ul>
+  <li>Central room sensors device: home/livingroom_central/
+    <ol>
+      <li>$name = "Living Room Central"</li>
+      <li>$state = "ready"</li>
+      <li>$localip = "10.1.3.134", $mac = "EF:EF:AA:BB:CC:56"</li>
+      <li>$fw/name = "esp32-livingroom-central", $fw/version = "1.0.0"</li>
+      <li>$stats/uptime = 180, $stats/interval = 60, $stats/signal = 80</li>
+      <li>$nodes = "sensors,heatpump,corner-light":
+        <ol>
+          <li>sensors
+            <ul>
+              <li>$name = "Living Room Sensors"</li>
+              <li>$type = "sensors"
+              <li>$properties = "temperature,humidity":
+                <ol>
+                  <li>temperature: $name = "Living Room Temperature", $settable = "false", $unit = "°C", $datatype = "float"</li>
+                  <li>humidity: $name = "Living Room Humidity", $settable = "false", $unit = "%", $datatype = "integer"</li>
+                </ol>
+            </ul>
+          </li>
+          <li>heatpump
+            <ul>
+              <li>$name = "Living Room Heatpump Control"</li>
+              <li>$type = "ir"
+              <li>$properties = "heating":
+                <ol>
+                  <li>heating: $name = "Heatpump Heating Enabled", $settable = "true", $datatype = "boolean"<li>
+                </ol>
+            </ul>
+          </li>
+          <li>corner-light
+            <ul>
+              <li>$name = "Living Room Corner Light"</li>
+              <li>$type = "light"
+              <li>$properties = "powered":
+                <ol>
+                  <li>heating: $name = "Living Room Corner Light Powered", $settable = "true", $datatype = "boolean"<li>
+                </ol>
+            </ul>
+          </li>
+        </ol>
+      </li>
+    </ol>
+  </li>
 </ul>
