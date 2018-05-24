@@ -1,0 +1,21 @@
+<h1>Home Automation</h1>
+
+<h2>MQTT</h2>
+My own protocol, structure and convention on top of MQTT (as transport layer) follows closed <a href="https://github.com/homieiot/convention">HomieIoT</a>. This is done for two reasons: a) it's already developed, tested, and well-thought out, and b) actual homie nodes can be easily integrated.
+
+<ul>
+  <li>A device is a physical piece of hardware and can contain one or multiple nodes (sensors or actors). A node can have multiple properties.</li>
+  <li>The base topic is "home/".</li>
+  <li>The topic for a device is "&lt;BASE_TOPIC&gt;/DEV_ID" with DEV_ID usually being the room or room-function.</li>
+  <li>Attributes that MUST BE set even if homie isn't used are:</li>
+    <ul>
+      <li>$name: friendly name</li>
+      <li>$state: at least "init", "ready"</li>
+      <li>$localip: IPv4 address of the device</li>
+      <li>$mac: MAC address of the device</li>
+      <li>$fw/name and $fw/version</li>
+      <li>$nodes: comma-separated list of nodes</li>
+      <li>$stats/uptime, and $stats/signal if ESP8266</li>
+    </ul>
+  <li></li>
+</ul>
