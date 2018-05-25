@@ -1,6 +1,9 @@
 Arduino and AVR Ethernet modules
 ################################
 
+:date: 2018-05-25
+:tags: electronics
+
 Full-sized Arduinos such as the Uno together with official or cloned Ethernet shields
 are easy to use as all the electronics connections and components are well-designed, tested,
 and the software stack supports these exact configurations.
