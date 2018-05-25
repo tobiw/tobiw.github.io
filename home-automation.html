@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>Home Automation</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="Electronics and Software Projects Atom Feed" />
+
+        <!--[if IE]>
+            <script src="https://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Electronics and Software Projects </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/misc.html">misc</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/home-automation.html" rel="bookmark"
+           title="Permalink to Home Automation">Home Automation</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2018-05-25T00:00:00+12:00">
+                Published: Fri 25 May 2018
+        </abbr>
+
+        <address class="vcard author">
+                By                         <a class="url fn" href="/author/tobi-wulff.html">Tobi Wulff</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>.</p>
+<p>tags: <a href="/tag/home-automation.html">home-automation</a> </p>
+</footer><!-- /.post-info -->      <div class="section" id="mqtt">
+<h2>MQTT</h2>
+<p>My own protocol, structure and convention on top of MQTT (as transport layer) follows closed &lt;a href=&quot;<a class="reference external" href="https://github.com/homieiot/convention">https://github.com/homieiot/convention</a>&quot;&gt;HomieIoT&lt;/a&gt;. This is done for two reasons: a) it's already developed, tested, and well-thought out, and b) actual homie nodes can be easily integrated.</p>
+<ul class="simple">
+<li>A device is a physical piece of hardware and can contain one or multiple nodes (sensors or actuators). A node can have multiple properties.</li>
+<li>The base topic is &quot;home/&quot;.</li>
+<li>The topic for a device is &quot;&amp;lt;BASE_TOPIC&amp;gt;/&amp;lt;DEV_ID&amp;gt;/&quot; with DEV_ID usually being the room or room-function.</li>
+<li>Device attributes that MUST BE set even if the homie firmware isn't used are:
+- $name: friendly name
+- $state: at least &quot;init&quot;, &quot;ready&quot;, &quot;alert&quot;
+- $localip: IPv4 address of the device
+- $mac: MAC address of the device
+- $fw/name and $fw/version
+- $nodes: comma-separated list of nodes
+- $stats/uptime in seconds, $stats/interval in seconds, $stats/signal if ESP8266</li>
+<li>The topic for a node is &quot;&amp;lt;BASE_TOPIC&amp;gt;/&amp;lt;DEV_ID&amp;gt;/&amp;lt;NODE_ID&amp;gt;/&quot; with NODE_ID describing a subsystem of the node, e.g. &quot;sensors&quot;.</li>
+<li>Node attributes MUST BE:
+- $name: friendly name
+- $type: string describing the type
+- $properties: comma-separated list of exposed sensor values or actuators</li>
+<li>The topic for a property is &quot;&amp;lt;BASE_TOPIC&amp;gt;/&amp;lt;DEV_ID&amp;gt;/&amp;lt;NODE_ID&amp;gt;/&amp;lt;PROPERTY_ID&amp;gt;/&quot; with PROPERTY_ID usually being the type of sensor, e.g. &quot;temperature&quot;. The property value can be read from the property topic.</li>
+<li>Node attributes MUST BE:
+- $name: friendly name
+- $settable: writeable property or readonly
+- $unit: unit string, e.g. &quot;°C&quot;, &quot;W&quot;, &quot;%&quot;, &quot;#&quot; (count), &quot;&quot; (empty)
+- $datatype: string describing the datatype: &quot;integer&quot;, &quot;float&quot;, &quot;boolean&quot;, &quot;string&quot;
+- $properties: comma-separated list of exposed sensor values or actuators
+- set: if settable, write value based on datatype to set the property</li>
+</ul>
+</div>
+<div class="section" id="examples">
+<h2>Examples</h2>
+<ul class="simple">
+<li>Central room sensors device: home/livingroom_central/
+- $name = &quot;Living Room Central&quot;
+- $state = &quot;ready&quot;
+- $localip = &quot;10.1.3.134&quot;, $mac = &quot;EF:EF:AA:BB:CC:56&quot;
+- $fw/name = &quot;esp32-livingroom-central&quot;, $fw/version = &quot;1.0.0&quot;
+- $stats/uptime = 180, $stats/interval = 60, $stats/signal = 80
+- $nodes = &quot;sensors,heatpump,corner-light&quot;:</li>
+</ul>
+<ol class="arabic simple">
+<li>sensors</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>$name = &quot;Living Room Sensors&quot;</li>
+<li>$type = &quot;sensors&quot;</li>
+<li>$properties = &quot;temperature,humidity&quot;:</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>temperature: $name = &quot;Living Room Temperature&quot;, $settable = &quot;false&quot;, $unit = &quot;°C&quot;, $datatype = &quot;float&quot;</li>
+<li>humidity: $name = &quot;Living Room Humidity&quot;, $settable = &quot;false&quot;, $unit = &quot;%&quot;, $datatype = &quot;integer&quot;</li>
+</ol>
+</blockquote>
+</blockquote>
+<ol class="arabic simple" start="2">
+<li>heatpump</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>$name = &quot;Living Room Heatpump Control&quot;</li>
+<li>$type = &quot;ir&quot;</li>
+<li>$properties = &quot;heating&quot;:</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>heating: $name = &quot;Heatpump Heating Enabled&quot;, $settable = &quot;true&quot;, $datatype = &quot;boolean&quot;</li>
+</ol>
+</blockquote>
+</blockquote>
+<ol class="arabic simple" start="3">
+<li>corner-light</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>$name = &quot;Living Room Corner Light&quot;</li>
+<li>$type = &quot;light&quot;</li>
+<li>$properties = &quot;powered&quot;:</li>
+</ol>
+<blockquote>
+<ol class="arabic simple">
+<li>heating: $name = &quot;Living Room Corner Light Powered&quot;, $settable = &quot;true&quot;, $datatype = &quot;boolean&quot;</li>
+</ol>
+</blockquote>
+</blockquote>
+</div>
+
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>links</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

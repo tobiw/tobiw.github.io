@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Electronics and Software Projects - misc</title><link href="/" rel="alternate"></link><link href="/feeds/misc.atom.xml" rel="self"></link><id>/</id><updated>2018-05-25T00:00:00+12:00</updated><entry><title>Arduino and AVR Ethernet modules</title><link href="/arduino-and-avr-ethernet-modules.html" rel="alternate"></link><published>2018-05-25T00:00:00+12:00</published><updated>2018-05-25T00:00:00+12:00</updated><author><name>Tobi Wulff</name></author><id>tag:None,2018-05-25:/arduino-and-avr-ethernet-modules.html</id><summary type="html">&lt;p&gt;Full-sized Arduinos such as the Uno together with official or cloned Ethernet shields
+are easy to use as all the electronics connections and components are well-designed, tested,
+and the software stack supports these exact configurations.&lt;/p&gt;
+&lt;p&gt;However, trying to use cheaper modules such as the ENC28J60 or WIZnet W5100 or W5500 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Full-sized Arduinos such as the Uno together with official or cloned Ethernet shields
+are easy to use as all the electronics connections and components are well-designed, tested,
+and the software stack supports these exact configurations.&lt;/p&gt;
+&lt;p&gt;However, trying to use cheaper modules such as the ENC28J60 or WIZnet W5100 or W5500 can be tricky
+because the connections have to be made from scratch. On this page I describe my issues while tring
+to get these modules to work, and document working wiring and software.&lt;/p&gt;
+&lt;div class="section" id="enc28j60"&gt;
+&lt;h2&gt;ENC28J60&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div class="section" id="w5100"&gt;
+&lt;h2&gt;W5100&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div class="section" id="w5500"&gt;
+&lt;h2&gt;W5500&lt;/h2&gt;
+&lt;/div&gt;
+</content><category term="electronics"></category></entry><entry><title>Home Automation</title><link href="/home-automation.html" rel="alternate"></link><published>2018-05-25T00:00:00+12:00</published><updated>2018-05-25T00:00:00+12:00</updated><author><name>Tobi Wulff</name></author><id>tag:None,2018-05-25:/home-automation.html</id><summary type="html">&lt;div class="section" id="mqtt"&gt;
+&lt;h2&gt;MQTT&lt;/h2&gt;
+&lt;p&gt;My own protocol, structure and convention on top of MQTT (as transport layer) follows closed &amp;lt;a href=&amp;quot;&lt;a class="reference external" href="https://github.com/homieiot/convention"&gt;https://github.com/homieiot/convention&lt;/a&gt;&amp;quot;&amp;gt;HomieIoT&amp;lt;/a&amp;gt;. This is done for two reasons: a) it's already developed, tested, and well-thought out, and b) actual homie nodes can be easily integrated.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;A device …&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;</summary><content type="html">&lt;div class="section" id="mqtt"&gt;
+&lt;h2&gt;MQTT&lt;/h2&gt;
+&lt;p&gt;My own protocol, structure and convention on top of MQTT (as transport layer) follows closed &amp;lt;a href=&amp;quot;&lt;a class="reference external" href="https://github.com/homieiot/convention"&gt;https://github.com/homieiot/convention&lt;/a&gt;&amp;quot;&amp;gt;HomieIoT&amp;lt;/a&amp;gt;. This is done for two reasons: a) it's already developed, tested, and well-thought out, and b) actual homie nodes can be easily integrated.&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;A device is a physical piece of hardware and can contain one or multiple nodes (sensors or actuators). A node can have multiple properties.&lt;/li&gt;
+&lt;li&gt;The base topic is &amp;quot;home/&amp;quot;.&lt;/li&gt;
+&lt;li&gt;The topic for a device is &amp;quot;&amp;amp;lt;BASE_TOPIC&amp;amp;gt;/&amp;amp;lt;DEV_ID&amp;amp;gt;/&amp;quot; with DEV_ID usually being the room or room-function.&lt;/li&gt;
+&lt;li&gt;Device attributes that MUST BE set even if the homie firmware isn't used are:
+- $name: friendly name
+- $state: at least &amp;quot;init&amp;quot;, &amp;quot;ready&amp;quot;, &amp;quot;alert&amp;quot;
+- $localip: IPv4 address of the device
+- $mac: MAC address of the device
+- $fw/name and $fw/version
+- $nodes: comma-separated list of nodes
+- $stats/uptime in seconds, $stats/interval in seconds, $stats/signal if ESP8266&lt;/li&gt;
+&lt;li&gt;The topic for a node is &amp;quot;&amp;amp;lt;BASE_TOPIC&amp;amp;gt;/&amp;amp;lt;DEV_ID&amp;amp;gt;/&amp;amp;lt;NODE_ID&amp;amp;gt;/&amp;quot; with NODE_ID describing a subsystem of the node, e.g. &amp;quot;sensors&amp;quot;.&lt;/li&gt;
+&lt;li&gt;Node attributes MUST BE:
+- $name: friendly name
+- $type: string describing the type
+- $properties: comma-separated list of exposed sensor values or actuators&lt;/li&gt;
+&lt;li&gt;The topic for a property is &amp;quot;&amp;amp;lt;BASE_TOPIC&amp;amp;gt;/&amp;amp;lt;DEV_ID&amp;amp;gt;/&amp;amp;lt;NODE_ID&amp;amp;gt;/&amp;amp;lt;PROPERTY_ID&amp;amp;gt;/&amp;quot; with PROPERTY_ID usually being the type of sensor, e.g. &amp;quot;temperature&amp;quot;. The property value can be read from the property topic.&lt;/li&gt;
+&lt;li&gt;Node attributes MUST BE:
+- $name: friendly name
+- $settable: writeable property or readonly
+- $unit: unit string, e.g. &amp;quot;°C&amp;quot;, &amp;quot;W&amp;quot;, &amp;quot;%&amp;quot;, &amp;quot;#&amp;quot; (count), &amp;quot;&amp;quot; (empty)
+- $datatype: string describing the datatype: &amp;quot;integer&amp;quot;, &amp;quot;float&amp;quot;, &amp;quot;boolean&amp;quot;, &amp;quot;string&amp;quot;
+- $properties: comma-separated list of exposed sensor values or actuators
+- set: if settable, write value based on datatype to set the property&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="examples"&gt;
+&lt;h2&gt;Examples&lt;/h2&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;Central room sensors device: home/livingroom_central/
+- $name = &amp;quot;Living Room Central&amp;quot;
+- $state = &amp;quot;ready&amp;quot;
+- $localip = &amp;quot;10.1.3.134&amp;quot;, $mac = &amp;quot;EF:EF:AA:BB:CC:56&amp;quot;
+- $fw/name = &amp;quot;esp32-livingroom-central&amp;quot;, $fw/version = &amp;quot;1.0.0&amp;quot;
+- $stats/uptime = 180, $stats/interval = 60, $stats/signal = 80
+- $nodes = &amp;quot;sensors,heatpump,corner-light&amp;quot;:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;sensors&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;$name = &amp;quot;Living Room Sensors&amp;quot;&lt;/li&gt;
+&lt;li&gt;$type = &amp;quot;sensors&amp;quot;&lt;/li&gt;
+&lt;li&gt;$properties = &amp;quot;temperature,humidity&amp;quot;:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;temperature: $name = &amp;quot;Living Room Temperature&amp;quot;, $settable = &amp;quot;false&amp;quot;, $unit = &amp;quot;°C&amp;quot;, $datatype = &amp;quot;float&amp;quot;&lt;/li&gt;
+&lt;li&gt;humidity: $name = &amp;quot;Living Room Humidity&amp;quot;, $settable = &amp;quot;false&amp;quot;, $unit = &amp;quot;%&amp;quot;, $datatype = &amp;quot;integer&amp;quot;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;ol class="arabic simple" start="2"&gt;
+&lt;li&gt;heatpump&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;$name = &amp;quot;Living Room Heatpump Control&amp;quot;&lt;/li&gt;
+&lt;li&gt;$type = &amp;quot;ir&amp;quot;&lt;/li&gt;
+&lt;li&gt;$properties = &amp;quot;heating&amp;quot;:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;heating: $name = &amp;quot;Heatpump Heating Enabled&amp;quot;, $settable = &amp;quot;true&amp;quot;, $datatype = &amp;quot;boolean&amp;quot;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;ol class="arabic simple" start="3"&gt;
+&lt;li&gt;corner-light&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;$name = &amp;quot;Living Room Corner Light&amp;quot;&lt;/li&gt;
+&lt;li&gt;$type = &amp;quot;light&amp;quot;&lt;/li&gt;
+&lt;li&gt;$properties = &amp;quot;powered&amp;quot;:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;heating: $name = &amp;quot;Living Room Corner Light Powered&amp;quot;, $settable = &amp;quot;true&amp;quot;, $datatype = &amp;quot;boolean&amp;quot;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;/blockquote&gt;
+&lt;/div&gt;
+</content><category term="home-automation"></category></entry></feed>
